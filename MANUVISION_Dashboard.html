@@ -192,8 +192,8 @@ const KPI = {
   Apr:{revenue:3.462,units:238134,defect:1.47,oee:84.9,otd:98.7,fillrate:99.5},
   May:{revenue:3.693,units:252454,defect:2.00,oee:84.1,otd:97.0,fillrate:97.9},
   Jun:{revenue:3.940,units:269110,defect:2.08,oee:83.7,otd:96.7,fillrate:99.3},
-  Jul:{revenue:3.925,units:268908,defect:1.23,oee:86.6,otd:97.5,fillrate:99.6},
-  Aug:{revenue:3.624,units:245930,defect:2.13,oee:81.6,otd:98.8,fillrate:98.8},
+  Jul:{revenue:3.925,units:268908,defect:1.23,oee:86.63,otd:97.5,fillrate:99.6},
+  Aug:{revenue:3.624,units:245930,defect:2.13,oee:81.57,otd:98.8,fillrate:98.8},
   Sep:{revenue:3.427,units:232515,defect:2.27,oee:84.2,otd:99.0,fillrate:98.8},
   Oct:{revenue:3.153,units:214853,defect:1.60,oee:83.5,otd:97.9,fillrate:99.3},
   Nov:{revenue:2.912,units:198376,defect:1.89,oee:84.1,otd:98.5,fillrate:99.3},
@@ -235,7 +235,10 @@ function updateKPIs(){
   const rows=getRows(), ms=getMs();
   const rev=sum(rows.map(r=>r.revenue));
   const units=sum(rows.map(r=>r.units));
-  const defect=sum(rows.map(r=>r.defect*r.units))/units;
+  // Defect Rate KPI: ใช้ units-weighted avg จาก KPI monthly (ค่าจริงจาก Excel)
+  // ไม่ใช้ FACT product-level defect เพราะ base ต่างกัน
+  const totalUnits=sum(ms.map(m=>KPI[m].units));
+  const defect=sum(ms.map(m=>KPI[m].defect*KPI[m].units))/totalUnits;
   const oee=avg(ms.map(m=>KPI[m].oee));
   const otd=avg(ms.map(m=>KPI[m].otd));
   document.getElementById('kpi-rev').textContent=rev.toFixed(2)+'M';
@@ -372,4 +375,3 @@ update();
 </script>
 </body>
 </html>
-
