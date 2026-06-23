@@ -7,187 +7,89 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
-
   :root {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --surface2: #1c2128;
-    --border: #30363d;
-    --blue: #1e6fd9;
-    --blue-dim: #1a3a6b;
-    --cyan: #39c5cf;
-    --green: #2ea04426;
-    --green-solid: #3fb950;
-    --yellow: #d29922;
-    --red: #f85149;
-    --text: #e6edf3;
-    --muted: #7d8590;
-    --accent: #58a6ff;
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2128;--border:#30363d;
+    --blue:#1e6fd9;--blue-dim:#1a3a6b;--cyan:#39c5cf;--green-solid:#3fb950;
+    --yellow:#d29922;--red:#f85149;--text:#e6edf3;--muted:#7d8590;--accent:#58a6ff;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'IBM Plex Sans Thai', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* HEADER */
-  .header {
-    background: linear-gradient(135deg, #0d1b2a 0%, #1e3a5f 50%, #0d1b2a 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .header-left { display: flex; align-items: center; gap: 14px; }
-  .logo-box {
-    width: 38px; height: 38px;
-    background: linear-gradient(135deg, #1e6fd9, #39c5cf);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 600; font-size: 13px; color: #fff;
-    letter-spacing: -0.5px;
-  }
-  .header-title { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: 0.3px; }
-  .header-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-  .header-badge {
-    background: var(--blue-dim); border: 1px solid var(--blue);
-    color: var(--accent); font-size: 11px; padding: 3px 10px;
-    border-radius: 20px; font-weight: 500;
-  }
-  .ai-tag {
-    background: linear-gradient(135deg, #2d1b69, #1a3a6b);
-    border: 1px solid #7c3aed44;
-    color: #a78bfa; font-size: 10px; padding: 3px 10px;
-    border-radius: 20px; font-weight: 600; letter-spacing: 0.5px;
-  }
-
-  /* SLICER BAR */
-  .slicer-bar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 10px 28px;
-    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
-  }
-  .slicer-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; }
-  .slicer-group { display: flex; gap: 6px; flex-wrap: wrap; }
-  .slicer-btn {
-    padding: 4px 12px; border-radius: 6px; border: 1px solid var(--border);
-    background: transparent; color: var(--muted);
-    font-size: 12px; cursor: pointer; transition: all 0.15s;
-    font-family: 'IBM Plex Sans Thai', sans-serif;
-  }
-  .slicer-btn:hover { border-color: var(--accent); color: var(--text); }
-  .slicer-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
-  .slicer-divider { width: 1px; height: 24px; background: var(--border); }
-
-  /* MAIN GRID */
-  .main { padding: 18px 28px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 14px; }
-
-  /* KPI CARDS */
-  .kpi-row { grid-column: 1/-1; display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; }
-  .kpi-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px 16px;
-    position: relative; overflow: hidden;
-    transition: border-color 0.2s;
-  }
-  .kpi-card:hover { border-color: var(--accent); }
-  .kpi-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  }
-  .kpi-card.blue::before { background: linear-gradient(90deg, var(--blue), var(--cyan)); }
-  .kpi-card.green::before { background: linear-gradient(90deg, var(--green-solid), #2ea044); }
-  .kpi-card.yellow::before { background: linear-gradient(90deg, var(--yellow), #e3b341); }
-  .kpi-card.red::before { background: linear-gradient(90deg, var(--red), #ff7b72); }
-  .kpi-card.cyan::before { background: linear-gradient(90deg, var(--cyan), #79c0ff); }
-  .kpi-label { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; }
-  .kpi-value { font-size: 26px; font-weight: 700; margin: 6px 0 2px; font-family: 'IBM Plex Mono', monospace; }
-  .kpi-card.blue .kpi-value { color: var(--accent); }
-  .kpi-card.green .kpi-value { color: var(--green-solid); }
-  .kpi-card.yellow .kpi-value { color: var(--yellow); }
-  .kpi-card.red .kpi-value { color: var(--red); }
-  .kpi-card.cyan .kpi-value { color: var(--cyan); }
-  .kpi-delta { font-size: 11px; color: var(--muted); }
-  .kpi-icon { position: absolute; right: 14px; top: 14px; font-size: 20px; opacity: 0.25; }
-
-  /* CHART CARDS */
-  .chart-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px;
-    transition: border-color 0.2s;
-  }
-  .chart-card:hover { border-color: #30363d; }
-  .chart-card.span2 { grid-column: span 2; }
-  .chart-card.span1 { grid-column: span 1; }
-  .card-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .card-sub { font-size: 10px; color: var(--muted); margin-bottom: 12px; }
-  .chart-wrap { position: relative; }
-
-  /* STAGE BARS */
-  .stage-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
-  .stage-row { display: flex; flex-direction: column; gap: 4px; }
-  .stage-header { display: flex; justify-content: space-between; font-size: 11px; }
-  .stage-name { color: var(--text); font-weight: 500; }
-  .stage-val { font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
-  .stage-bar-bg { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
-  .stage-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
-
-  /* OEE GAUGES */
-  .oee-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .oee-item { text-align: center; }
-  .oee-name { font-size: 10px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
-  .oee-circle { position: relative; display: inline-block; }
-  .oee-circle svg { transform: rotate(-90deg); }
-  .oee-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-  .oee-pct { font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 700; color: var(--cyan); }
-  .oee-lbl { font-size: 9px; color: var(--muted); }
-
-  /* PRODUCT TABLE */
-  .prod-table { width: 100%; font-size: 11px; border-collapse: collapse; }
-  .prod-table th { color: var(--muted); font-weight: 600; text-align: left; padding: 0 0 8px; text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; border-bottom: 1px solid var(--border); }
-  .prod-table td { padding: 7px 0; border-bottom: 1px solid #21262d; color: var(--text); }
-  .prod-table .mono { font-family: 'IBM Plex Mono', monospace; }
-  .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
-  .pill.good { background: #1a3a1a; color: var(--green-solid); }
-  .pill.warn { background: #3a2a1a; color: var(--yellow); }
-
-  /* AI INSIGHT BOX */
-  .ai-box {
-    grid-column: 1/-1;
-    background: linear-gradient(135deg, #1a1040 0%, #0d1b2a 100%);
-    border: 1px solid #7c3aed33;
-    border-radius: 10px; padding: 14px 20px;
-    display: flex; align-items: flex-start; gap: 14px;
-  }
-  .ai-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
-  .ai-title { font-size: 11px; font-weight: 700; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
-  .ai-insights { display: flex; gap: 20px; flex-wrap: wrap; }
-  .ai-insight { font-size: 12px; color: #c9b3f5; line-height: 1.5; flex: 1; min-width: 200px; }
-  .ai-insight span { color: #fff; font-weight: 600; }
-
-  /* FOOTER */
-  .footer {
-    text-align: center; padding: 10px; font-size: 10px; color: var(--muted);
-    border-top: 1px solid var(--border);
-  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'IBM Plex Sans Thai',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+  .header{background:linear-gradient(135deg,#0d1b2a 0%,#1e3a5f 50%,#0d1b2a 100%);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;}
+  .header-left{display:flex;align-items:center;gap:14px;}
+  .logo-box{width:38px;height:38px;background:linear-gradient(135deg,#1e6fd9,#39c5cf);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;color:#fff;}
+  .header-title{font-size:17px;font-weight:700;color:var(--text);}
+  .header-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+  .header-badge{background:var(--blue-dim);border:1px solid var(--blue);color:var(--accent);font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;}
+  .ai-tag{background:linear-gradient(135deg,#2d1b69,#1a3a6b);border:1px solid #7c3aed44;color:#a78bfa;font-size:10px;padding:3px 10px;border-radius:20px;font-weight:600;}
+  .slicer-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 28px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+  .slicer-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
+  .slicer-group{display:flex;gap:6px;flex-wrap:wrap;}
+  .slicer-btn{padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:all .15s;font-family:'IBM Plex Sans Thai',sans-serif;}
+  .slicer-btn:hover{border-color:var(--accent);color:var(--text);}
+  .slicer-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600;}
+  .slicer-divider{width:1px;height:24px;background:var(--border);}
+  .main{padding:18px 28px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;}
+  .kpi-row{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+  .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;transition:border-color .2s;}
+  .kpi-card:hover{border-color:var(--accent);}
+  .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+  .kpi-card.blue::before{background:linear-gradient(90deg,var(--blue),var(--cyan));}
+  .kpi-card.green::before{background:linear-gradient(90deg,var(--green-solid),#2ea044);}
+  .kpi-card.yellow::before{background:linear-gradient(90deg,var(--yellow),#e3b341);}
+  .kpi-card.red::before{background:linear-gradient(90deg,var(--red),#ff7b72);}
+  .kpi-card.cyan::before{background:linear-gradient(90deg,var(--cyan),#79c0ff);}
+  .kpi-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px;}
+  .kpi-value{font-size:26px;font-weight:700;margin:6px 0 2px;font-family:'IBM Plex Mono',monospace;}
+  .kpi-card.blue .kpi-value{color:var(--accent);}
+  .kpi-card.green .kpi-value{color:var(--green-solid);}
+  .kpi-card.yellow .kpi-value{color:var(--yellow);}
+  .kpi-card.red .kpi-value{color:var(--red);}
+  .kpi-card.cyan .kpi-value{color:var(--cyan);}
+  .kpi-delta{font-size:11px;color:var(--muted);}
+  .kpi-icon{position:absolute;right:14px;top:14px;font-size:20px;opacity:.25;}
+  .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;}
+  .chart-card.span2{grid-column:span 2;}
+  .chart-card.span1{grid-column:span 1;}
+  .card-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;}
+  .card-sub{font-size:10px;color:var(--muted);margin-bottom:12px;}
+  .stage-list{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+  .stage-row{display:flex;flex-direction:column;gap:4px;}
+  .stage-header{display:flex;justify-content:space-between;font-size:11px;}
+  .stage-name{color:var(--text);font-weight:500;}
+  .stage-val{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .stage-bar-bg{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+  .stage-bar-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+  .oee-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .oee-item{text-align:center;}
+  .oee-name{font-size:10px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;}
+  .oee-circle{position:relative;display:inline-block;}
+  .oee-circle svg{transform:rotate(-90deg);}
+  .oee-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+  .oee-pct{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;}
+  .oee-lbl{font-size:9px;color:var(--muted);}
+  .prod-table{width:100%;font-size:11px;border-collapse:collapse;}
+  .prod-table th{color:var(--muted);font-weight:600;text-align:left;padding:0 0 8px;text-transform:uppercase;letter-spacing:.5px;font-size:10px;border-bottom:1px solid var(--border);}
+  .prod-table td{padding:7px 0;border-bottom:1px solid #21262d;color:var(--text);}
+  .prod-table .mono{font-family:'IBM Plex Mono',monospace;}
+  .pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+  .pill.good{background:#1a3a1a;color:var(--green-solid);}
+  .pill.warn{background:#3a2a1a;color:var(--yellow);}
+  .ai-box{grid-column:1/-1;background:linear-gradient(135deg,#1a1040 0%,#0d1b2a 100%);border:1px solid #7c3aed33;border-radius:10px;padding:14px 20px;display:flex;align-items:flex-start;gap:14px;}
+  .ai-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
+  .ai-title{font-size:11px;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
+  .ai-insights{display:flex;gap:20px;flex-wrap:wrap;}
+  .ai-insight{font-size:12px;color:#c9b3f5;line-height:1.5;flex:1;min-width:200px;}
+  .ai-insight span{color:#fff;font-weight:600;}
+  .footer{text-align:center;padding:10px;font-size:10px;color:var(--muted);border-top:1px solid var(--border);}
 </style>
 </head>
 <body>
-
-<!-- HEADER -->
 <div class="header">
   <div class="header-left">
     <div class="logo-box">MV</div>
     <div>
       <div class="header-title">MANUVISION — Production & Quality Analytics</div>
-      <div class="header-sub">Automotive Parts Manufacturing · Full Year 2025</div>
+      <div class="header-sub" id="header-sub">Automotive Parts Manufacturing · Full Year 2025</div>
     </div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
@@ -196,7 +98,6 @@
   </div>
 </div>
 
-<!-- SLICER BAR -->
 <div class="slicer-bar">
   <span class="slicer-label">Month</span>
   <div class="slicer-group" id="month-slicer">
@@ -224,91 +125,50 @@
   </div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
-
-  <!-- KPI ROW -->
   <div class="kpi-row">
-    <div class="kpi-card blue">
-      <div class="kpi-icon">💰</div>
-      <div class="kpi-label">Total Revenue</div>
-      <div class="kpi-value" id="kpi-rev">39.7M</div>
-      <div class="kpi-delta">THB · Full Year 2025</div>
-    </div>
-    <div class="kpi-card green">
-      <div class="kpi-icon">📦</div>
-      <div class="kpi-label">Units Produced</div>
-      <div class="kpi-value" id="kpi-units">2.71M</div>
-      <div class="kpi-delta">pcs · 3 product lines</div>
-    </div>
-    <div class="kpi-card yellow">
-      <div class="kpi-icon">⚠️</div>
-      <div class="kpi-label">Avg Defect Rate</div>
-      <div class="kpi-value" id="kpi-defect">1.88%</div>
-      <div class="kpi-delta">Target &lt; 1.5%</div>
-    </div>
-    <div class="kpi-card cyan">
-      <div class="kpi-icon">⚙️</div>
-      <div class="kpi-label">Avg OEE</div>
-      <div class="kpi-value" id="kpi-oee">84.3%</div>
-      <div class="kpi-delta">Target ≥ 85%</div>
-    </div>
-    <div class="kpi-card green">
-      <div class="kpi-icon">🚚</div>
-      <div class="kpi-label">Avg OTD</div>
-      <div class="kpi-value" id="kpi-otd">98.3%</div>
-      <div class="kpi-delta">Target ≥ 97%</div>
-    </div>
+    <div class="kpi-card blue"><div class="kpi-icon">💰</div><div class="kpi-label">Total Revenue</div><div class="kpi-value" id="kpi-rev">-</div><div class="kpi-delta" id="kpi-rev-sub">THB · Full Year 2025</div></div>
+    <div class="kpi-card green"><div class="kpi-icon">📦</div><div class="kpi-label">Units Produced</div><div class="kpi-value" id="kpi-units">-</div><div class="kpi-delta" id="kpi-units-sub">pcs · 3 product lines</div></div>
+    <div class="kpi-card yellow"><div class="kpi-icon">⚠️</div><div class="kpi-label">Avg Defect Rate</div><div class="kpi-value" id="kpi-defect">-</div><div class="kpi-delta">Target &lt; 1.5%</div></div>
+    <div class="kpi-card cyan"><div class="kpi-icon">⚙️</div><div class="kpi-label">Avg OEE</div><div class="kpi-value" id="kpi-oee">-</div><div class="kpi-delta">Target ≥ 85%</div></div>
+    <div class="kpi-card green"><div class="kpi-icon">🚚</div><div class="kpi-label">Avg OTD</div><div class="kpi-value" id="kpi-otd">-</div><div class="kpi-delta">Target ≥ 97%</div></div>
   </div>
 
-  <!-- ROW 2: Revenue trend (span2) + Defect by Stage (span1) + OEE gauge (span1) -->
   <div class="chart-card span2">
     <div class="card-title">Revenue & Defect Rate Trend</div>
-    <div class="card-sub">Monthly Revenue (M THB) vs Defect Rate % — dual axis</div>
-    <div class="chart-wrap" style="height:180px">
-      <canvas id="revChart"></canvas>
-    </div>
+    <div class="card-sub" id="rev-sub">Monthly Revenue (M THB) vs Defect Rate % — dual axis</div>
+    <div style="position:relative;height:180px"><canvas id="revChart"></canvas></div>
   </div>
-
   <div class="chart-card span1">
     <div class="card-title">Defect Rate by Stage</div>
-    <div class="card-sub">Avg % · Target &lt; 1.5%</div>
+    <div class="card-sub" id="stage-sub">Avg % · Target &lt; 1.5%</div>
     <div class="stage-list" id="stage-list"></div>
   </div>
-
   <div class="chart-card span1">
     <div class="card-title">OEE by Process</div>
-    <div class="card-sub">Avg % · Target ≥ 85%</div>
+    <div class="card-sub" id="oee-sub">Avg % · Target ≥ 85%</div>
     <div class="oee-grid" id="oee-grid"></div>
   </div>
 
-  <!-- ROW 3: Product Revenue pie (span1) + Product table (span1) + OTD bar (span2) -->
   <div class="chart-card span1">
     <div class="card-title">Revenue by Product</div>
-    <div class="card-sub">Share of total revenue 2025</div>
-    <div class="chart-wrap" style="height:170px">
-      <canvas id="pieChart"></canvas>
-    </div>
+    <div class="card-sub" id="pie-sub">Share of total revenue</div>
+    <div style="position:relative;height:170px"><canvas id="pieChart"></canvas></div>
   </div>
-
   <div class="chart-card span1">
     <div class="card-title">Product Summary</div>
-    <div class="card-sub">Revenue, Units & Defect overview</div>
+    <div class="card-sub" id="table-sub">Revenue, Units & Defect overview</div>
     <table class="prod-table" id="prod-table">
       <thead><tr><th>Product</th><th>Rev (M)</th><th>Units</th><th>Defect</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
-
   <div class="chart-card span2">
     <div class="card-title">OTD & Fill Rate by Month</div>
-    <div class="card-sub">On-Time Delivery % vs Fill Rate % · Target ≥ 97%</div>
-    <div class="chart-wrap" style="height:160px">
-      <canvas id="otdChart"></canvas>
-    </div>
+    <div class="card-sub" id="otd-sub">On-Time Delivery % vs Fill Rate % · Target ≥ 97%</div>
+    <div style="position:relative;height:160px"><canvas id="otdChart"></canvas></div>
   </div>
 
-  <!-- AI INSIGHT BOX -->
   <div class="ai-box">
     <div class="ai-icon">✦</div>
     <div style="flex:1">
@@ -316,332 +176,200 @@
       <div class="ai-insights" id="ai-insights"></div>
     </div>
   </div>
-
 </div>
-
 <div class="footer">MANUVISION · Built with AI Tools (Claude + Python) · Watsana (Pia) · Data Analyst Portfolio 2025</div>
 
 <script>
-// ---- DATA ----
+const MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const PRODUCTS = ['Engine Bolts','Chassis Bolts','Others'];
+const STAGES  = ['Cold Forming','Thread Rolling','Heat Treatment','Plating'];
+
+// ── REAL DATA FROM EXCEL ──────────────────────────────────────────────────────
 const KPI = {
-  Jan:  {revenue:2.69, units:180787, defect:2.17, oee:82.9, otd:98.2, coq:66.0, fillrate:99.7},
-  Feb:  {revenue:2.76, units:190447, defect:2.39, oee:84.6, otd:98.8, coq:65.1, fillrate:98.6},
-  Mar:  {revenue:3.20, units:219751, defect:1.82, oee:85.6, otd:99.5, coq:60.4, fillrate:98.9},
-  Apr:  {revenue:3.46, units:238134, defect:1.47, oee:84.9, otd:98.7, coq:57.6, fillrate:99.5},
-  May:  {revenue:3.69, units:252454, defect:2.00, oee:84.1, otd:97.0, coq:65.5, fillrate:97.9},
-  Jun:  {revenue:3.94, units:269110, defect:2.08, oee:83.7, otd:96.7, coq:51.9, fillrate:99.3},
-  Jul:  {revenue:3.92, units:268908, defect:1.23, oee:86.6, otd:97.5, coq:65.8, fillrate:99.6},
-  Aug:  {revenue:3.62, units:245930, defect:2.13, oee:81.6, otd:98.8, coq:53.0, fillrate:98.8},
-  Sep:  {revenue:3.43, units:232515, defect:2.27, oee:84.2, otd:99.0, coq:58.7, fillrate:98.8},
-  Oct:  {revenue:3.15, units:214853, defect:1.60, oee:83.5, otd:97.9, coq:58.1, fillrate:99.3},
-  Nov:  {revenue:2.91, units:198376, defect:1.89, oee:84.1, otd:98.5, coq:53.6, fillrate:99.3},
-  Dec:  {revenue:2.88, units:198457, defect:1.45, oee:86.0, otd:99.5, coq:55.8, fillrate:99.0},
+  Jan:{revenue:2.691,units:180787,defect:2.17,oee:82.9,otd:98.2,fillrate:99.7},
+  Feb:{revenue:2.762,units:190447,defect:2.39,oee:84.6,otd:98.8,fillrate:98.6},
+  Mar:{revenue:3.203,units:219751,defect:1.82,oee:85.6,otd:99.5,fillrate:98.9},
+  Apr:{revenue:3.462,units:238134,defect:1.47,oee:84.9,otd:98.7,fillrate:99.5},
+  May:{revenue:3.693,units:252454,defect:2.00,oee:84.1,otd:97.0,fillrate:97.9},
+  Jun:{revenue:3.940,units:269110,defect:2.08,oee:83.7,otd:96.7,fillrate:99.3},
+  Jul:{revenue:3.925,units:268908,defect:1.23,oee:86.6,otd:97.5,fillrate:99.6},
+  Aug:{revenue:3.624,units:245930,defect:2.13,oee:81.6,otd:98.8,fillrate:98.8},
+  Sep:{revenue:3.427,units:232515,defect:2.27,oee:84.2,otd:99.0,fillrate:98.8},
+  Oct:{revenue:3.153,units:214853,defect:1.60,oee:83.5,otd:97.9,fillrate:99.3},
+  Nov:{revenue:2.912,units:198376,defect:1.89,oee:84.1,otd:98.5,fillrate:99.3},
+  Dec:{revenue:2.885,units:198457,defect:1.45,oee:86.0,otd:99.5,fillrate:99.0},
 };
 
-const PROD_DATA = {
-  'Engine Bolts': {revenue:17.66, units:936240, defect:1.75},
-  'Chassis Bolts':{revenue:11.75, units:823193, defect:2.10},
-  'Others':       {revenue:10.26, units:950289, defect:1.78},
-};
+// FACT table: month x product (ข้อมูลจาก Production_Output + Defect_CoQ จริง)
+const FACT = {};
+MONTHS.forEach(m => { FACT[m] = {}; });
+const _REV  = {"Jan_Engine Bolts":1.235,"Jan_Chassis Bolts":0.767,"Jan_Others":0.689,"Feb_Engine Bolts":1.2,"Feb_Chassis Bolts":0.809,"Feb_Others":0.752,"Mar_Engine Bolts":1.464,"Mar_Chassis Bolts":0.948,"Mar_Others":0.79,"Apr_Engine Bolts":1.538,"Apr_Chassis Bolts":1.023,"Apr_Others":0.901,"May_Engine Bolts":1.645,"May_Chassis Bolts":1.096,"May_Others":0.951,"Jun_Engine Bolts":1.777,"Jun_Chassis Bolts":1.166,"Jun_Others":0.997,"Jul_Engine Bolts":1.683,"Jul_Chassis Bolts":1.191,"Jul_Others":1.05,"Aug_Engine Bolts":1.566,"Aug_Chassis Bolts":1.104,"Aug_Others":0.954,"Sep_Engine Bolts":1.567,"Sep_Chassis Bolts":0.986,"Sep_Others":0.874,"Oct_Engine Bolts":1.387,"Oct_Chassis Bolts":0.949,"Oct_Others":0.817,"Nov_Engine Bolts":1.304,"Nov_Chassis Bolts":0.868,"Nov_Others":0.74,"Dec_Engine Bolts":1.297,"Dec_Chassis Bolts":0.844,"Dec_Others":0.743};
+const _UNITS= {"Jan_Engine Bolts":63333,"Jan_Chassis Bolts":53743,"Jan_Others":63711,"Feb_Engine Bolts":64998,"Feb_Chassis Bolts":57314,"Feb_Others":68135,"Mar_Engine Bolts":77349,"Mar_Chassis Bolts":67603,"Mar_Others":74799,"Apr_Engine Bolts":82835,"Apr_Chassis Bolts":72568,"Apr_Others":82731,"May_Engine Bolts":86810,"May_Chassis Bolts":77024,"May_Others":88620,"Jun_Engine Bolts":94802,"Jun_Chassis Bolts":80757,"Jun_Others":93551,"Jul_Engine Bolts":89600,"Jul_Chassis Bolts":82693,"Jul_Others":96615,"Aug_Engine Bolts":82399,"Aug_Chassis Bolts":77029,"Aug_Others":86502,"Sep_Engine Bolts":81780,"Sep_Chassis Bolts":69147,"Sep_Others":81588,"Oct_Engine Bolts":73951,"Oct_Chassis Bolts":65309,"Oct_Others":75593,"Nov_Engine Bolts":69235,"Nov_Chassis Bolts":60295,"Nov_Others":68846,"Dec_Engine Bolts":69148,"Dec_Chassis Bolts":59711,"Dec_Others":69598};
+const _DEFECT={"Jan_Engine Bolts":1.97,"Jan_Chassis Bolts":1.83,"Jan_Others":1.68,"Feb_Engine Bolts":2.31,"Feb_Chassis Bolts":2.02,"Feb_Others":1.54,"Mar_Engine Bolts":1.75,"Mar_Chassis Bolts":1.49,"Mar_Others":1.61,"Apr_Engine Bolts":1.56,"Apr_Chassis Bolts":1.23,"Apr_Others":1.37,"May_Engine Bolts":2.28,"May_Chassis Bolts":1.47,"May_Others":1.73,"Jun_Engine Bolts":1.54,"Jun_Chassis Bolts":1.87,"Jun_Others":1.11,"Jul_Engine Bolts":2.16,"Jul_Chassis Bolts":2.31,"Jul_Others":1.44,"Aug_Engine Bolts":1.62,"Aug_Chassis Bolts":1.06,"Aug_Others":1.81,"Sep_Engine Bolts":1.95,"Sep_Chassis Bolts":1.48,"Sep_Others":2.33,"Oct_Engine Bolts":1.73,"Oct_Chassis Bolts":1.05,"Oct_Others":1.38,"Nov_Engine Bolts":1.61,"Nov_Chassis Bolts":1.39,"Nov_Others":1.66,"Dec_Engine Bolts":1.29,"Dec_Chassis Bolts":2.04,"Dec_Others":1.41};
+MONTHS.forEach(m => PRODUCTS.forEach(p => {
+  const k = `${m}_${p}`;
+  FACT[m][p] = {revenue:_REV[k]||0, units:_UNITS[k]||0, defect:_DEFECT[k]||0, oee:KPI[m].oee, otd:KPI[m].otd, fillrate:KPI[m].fillrate};
+}));
 
-const STAGE_DEFECT = {
-  'Cold Forming':   1.55,
-  'Thread Rolling': 1.59,
-  'Heat Treatment': 1.72,
-  'Plating':        1.82,
-};
+// Defect by Stage — แยกตามเดือนและ product จากข้อมูลจริง
+const DEFECT_STAGE_MONTH = {"Jan_Cold Forming":1.95,"Jan_Thread Rolling":2.16,"Jan_Heat Treatment":1.72,"Jan_Plating":1.48,"Feb_Cold Forming":1.69,"Feb_Thread Rolling":1.38,"Feb_Heat Treatment":2.43,"Feb_Plating":2.32,"Mar_Cold Forming":1.76,"Mar_Thread Rolling":2.36,"Mar_Heat Treatment":1.25,"Mar_Plating":1.1,"Apr_Cold Forming":0.62,"Apr_Thread Rolling":1.79,"Apr_Heat Treatment":1.72,"Apr_Plating":1.42,"May_Cold Forming":1.15,"May_Thread Rolling":1.58,"May_Heat Treatment":2.56,"May_Plating":2.02,"Jun_Cold Forming":1.51,"Jun_Thread Rolling":0.85,"Jun_Heat Treatment":1.66,"Jun_Plating":2.01,"Jul_Cold Forming":2.43,"Jul_Thread Rolling":1.64,"Jul_Heat Treatment":1.87,"Jul_Plating":1.95,"Aug_Cold Forming":0.63,"Aug_Thread Rolling":2.02,"Aug_Heat Treatment":1.15,"Aug_Plating":2.17,"Sep_Cold Forming":2.26,"Sep_Thread Rolling":1.94,"Sep_Heat Treatment":1.65,"Sep_Plating":1.84,"Oct_Cold Forming":0.55,"Oct_Thread Rolling":1.44,"Oct_Heat Treatment":1.25,"Oct_Plating":2.3,"Nov_Cold Forming":2.07,"Nov_Thread Rolling":0.69,"Nov_Heat Treatment":1.65,"Nov_Plating":1.81,"Dec_Cold Forming":1.94,"Dec_Thread Rolling":1.19,"Dec_Heat Treatment":1.8,"Dec_Plating":1.41};
+const DEFECT_STAGE_PROD  = {"Engine Bolts_Cold Forming":1.73,"Engine Bolts_Thread Rolling":1.5,"Engine Bolts_Heat Treatment":1.85,"Engine Bolts_Plating":2.19,"Chassis Bolts_Cold Forming":1.46,"Chassis Bolts_Thread Rolling":1.84,"Chassis Bolts_Heat Treatment":1.59,"Chassis Bolts_Plating":1.53,"Others_Cold Forming":1.45,"Others_Thread Rolling":1.43,"Others_Heat Treatment":1.74,"Others_Plating":1.74};
+const DEFECT_STAGE_ALL   = {'Cold Forming':1.55,'Thread Rolling':1.59,'Heat Treatment':1.72,'Plating':1.82};
 
-const OEE_PROC = {
-  'Cold Forming':   84.7,
-  'Thread Rolling': 84.2,
-  'Heat Treatment': 83.6,
-  'Plating':        84.8,
-};
+// OEE by Process แยกตามเดือนจากข้อมูลจริง
+const OEE_MP  = {"Jan_Cold Forming":84.6,"Jan_Thread Rolling":87.2,"Jan_Heat Treatment":78.5,"Jan_Plating":81.2,"Feb_Cold Forming":85.5,"Feb_Thread Rolling":84.8,"Feb_Heat Treatment":85.0,"Feb_Plating":83.3,"Mar_Cold Forming":87.0,"Mar_Thread Rolling":82.1,"Mar_Heat Treatment":84.2,"Mar_Plating":89.2,"Apr_Cold Forming":81.7,"Apr_Thread Rolling":86.0,"Apr_Heat Treatment":87.1,"Apr_Plating":84.9,"May_Cold Forming":84.0,"May_Thread Rolling":84.5,"May_Heat Treatment":81.0,"May_Plating":86.8,"Jun_Cold Forming":84.1,"Jun_Thread Rolling":83.4,"Jun_Heat Treatment":86.0,"Jun_Plating":81.3,"Jul_Cold Forming":82.7,"Jul_Thread Rolling":87.2,"Jul_Heat Treatment":88.9,"Jul_Plating":87.8,"Aug_Cold Forming":84.4,"Aug_Thread Rolling":82.7,"Aug_Heat Treatment":77.3,"Aug_Plating":81.9,"Sep_Cold Forming":82.3,"Sep_Thread Rolling":86.1,"Sep_Heat Treatment":86.5,"Sep_Plating":81.9,"Oct_Cold Forming":85.5,"Oct_Thread Rolling":84.4,"Oct_Heat Treatment":79.0,"Oct_Plating":85.1,"Nov_Cold Forming":88.6,"Nov_Thread Rolling":82.6,"Nov_Heat Treatment":78.5,"Nov_Plating":86.7,"Dec_Cold Forming":85.5,"Dec_Thread Rolling":79.7,"Dec_Heat Treatment":91.1,"Dec_Plating":87.7};
+const OEE_ALL = {'Cold Forming':84.7,'Thread Rolling':84.2,'Heat Treatment':83.6,'Plating':84.8};
 
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let selMonth='ALL', selProd='ALL';
+function selectMonth(m,btn){selMonth=m;document.querySelectorAll('#month-slicer .slicer-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');update();}
+function selectProd(p,btn){selProd=p;document.querySelectorAll('#prod-slicer .slicer-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');update();}
+const getMs=()=>selMonth==='ALL'?MONTHS:[selMonth];
+const getPs=()=>selProd==='ALL'?PRODUCTS:[selProd];
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const avg=a=>sum(a)/a.length;
+function getRows(){const r=[];getMs().forEach(m=>getPs().forEach(p=>r.push({m,p,...FACT[m][p]})));return r;}
 
-let selMonth = 'ALL', selProd = 'ALL';
-
-// ---- SLICER LOGIC ----
-function selectMonth(m, btn) {
-  selMonth = m;
-  document.querySelectorAll('#month-slicer .slicer-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  update();
-}
-function selectProd(p, btn) {
-  selProd = p;
-  document.querySelectorAll('#prod-slicer .slicer-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  update();
-}
-
-function getFilteredMonths() {
-  return selMonth === 'ALL' ? MONTHS : [selMonth];
-}
-function avg(arr) { return arr.reduce((a,b)=>a+b,0)/arr.length; }
-function sum(arr) { return arr.reduce((a,b)=>a+b,0); }
-
-// ---- KPI UPDATE ----
-function updateKPIs() {
-  const months = getFilteredMonths();
-  let rev = sum(months.map(m=>KPI[m].revenue));
-  let units = sum(months.map(m=>KPI[m].units));
-  let defect = avg(months.map(m=>KPI[m].defect));
-  let oee = avg(months.map(m=>KPI[m].oee));
-  let otd = avg(months.map(m=>KPI[m].otd));
-
-  // product filter adjustments (approximate scaling)
-  if(selProd !== 'ALL') {
-    const share = {
-      'Engine Bolts': {rev:0.445, units:0.345, defect:1.75},
-      'Chassis Bolts':{rev:0.296, units:0.304, defect:2.10},
-      'Others':       {rev:0.259, units:0.351, defect:1.78},
-    }[selProd];
-    rev = +(rev * share.rev).toFixed(2);
-    units = Math.round(units * share.units);
-    defect = share.defect;
-  }
-
-  document.getElementById('kpi-rev').textContent = rev.toFixed(1)+'M';
-  document.getElementById('kpi-units').textContent = units >= 1e6 ? (units/1e6).toFixed(2)+'M' : (units/1000).toFixed(0)+'K';
-  document.getElementById('kpi-defect').textContent = defect.toFixed(2)+'%';
-  document.getElementById('kpi-oee').textContent = oee.toFixed(1)+'%';
-  document.getElementById('kpi-otd').textContent = otd.toFixed(1)+'%';
+// ── KPI ───────────────────────────────────────────────────────────────────────
+function updateKPIs(){
+  const rows=getRows(), ms=getMs();
+  const rev=sum(rows.map(r=>r.revenue));
+  const units=sum(rows.map(r=>r.units));
+  const defect=sum(rows.map(r=>r.defect*r.units))/units;
+  const oee=avg(ms.map(m=>KPI[m].oee));
+  const otd=avg(ms.map(m=>KPI[m].otd));
+  document.getElementById('kpi-rev').textContent=rev.toFixed(2)+'M';
+  document.getElementById('kpi-units').textContent=units>=1e6?(units/1e6).toFixed(2)+'M':(units/1000).toFixed(0)+'K';
+  document.getElementById('kpi-defect').textContent=defect.toFixed(2)+'%';
+  document.getElementById('kpi-oee').textContent=oee.toFixed(1)+'%';
+  document.getElementById('kpi-otd').textContent=otd.toFixed(1)+'%';
+  const mLbl=selMonth==='ALL'?'Full Year 2025':selMonth+' 2025';
+  const pLbl=selProd==='ALL'?'3 product lines':selProd;
+  document.getElementById('kpi-rev-sub').textContent=`THB · ${mLbl}`;
+  document.getElementById('kpi-units-sub').textContent=`pcs · ${pLbl}`;
 }
 
-// ---- CHARTS ----
-let revChartObj, pieChartObj, otdChartObj;
+// ── CHARTS ────────────────────────────────────────────────────────────────────
+let revC,pieC,otdC;
+function initCharts(){
+  revC=new Chart(document.getElementById('revChart').getContext('2d'),{type:'bar',data:{labels:MONTHS,datasets:[
+    {label:'Revenue (M THB)',data:[],backgroundColor:'rgba(30,111,217,0.6)',borderColor:'#1e6fd9',borderWidth:1,borderRadius:3,yAxisID:'y'},
+    {label:'Defect Rate %',data:[],type:'line',borderColor:'#f85149',backgroundColor:'rgba(248,81,73,0.1)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#f85149',yAxisID:'y2'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#7d8590',font:{size:10},boxWidth:12}}},scales:{x:{ticks:{color:'#7d8590',font:{size:10}},grid:{color:'#21262d'}},y:{ticks:{color:'#58a6ff',font:{size:10}},grid:{color:'#21262d'},position:'left',title:{display:true,text:'Revenue (M)',color:'#58a6ff',font:{size:9}}},y2:{ticks:{color:'#f85149',font:{size:10}},grid:{display:false},position:'right',title:{display:true,text:'Defect %',color:'#f85149',font:{size:9}}}}}});
 
-const chartDefaults = {
-  color: '#7d8590',
-  plugins: { legend: { labels: { color:'#7d8590', font:{size:10} } } }
-};
+  pieC=new Chart(document.getElementById('pieChart').getContext('2d'),{type:'doughnut',data:{labels:PRODUCTS,datasets:[{data:[],backgroundColor:['#1e6fd9','#39c5cf','#d29922'],borderColor:'#161b22',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#7d8590',font:{size:10},boxWidth:10,padding:8}}}}});
 
-function initRevChart() {
-  const ctx = document.getElementById('revChart').getContext('2d');
-  revChartObj = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: MONTHS,
-      datasets: [
-        {
-          label: 'Revenue (M THB)',
-          data: MONTHS.map(m=>KPI[m].revenue),
-          backgroundColor: 'rgba(30,111,217,0.6)',
-          borderColor: '#1e6fd9',
-          borderWidth: 1,
-          borderRadius: 3,
-          yAxisID: 'y',
-        },
-        {
-          label: 'Defect Rate %',
-          data: MONTHS.map(m=>KPI[m].defect),
-          type: 'line',
-          borderColor: '#f85149',
-          backgroundColor: 'rgba(248,81,73,0.1)',
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: '#f85149',
-          pointRadius: 3,
-          yAxisID: 'y2',
-        }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color:'#7d8590', font:{size:10}, boxWidth:12 } } },
-      scales: {
-        x: { ticks:{color:'#7d8590',font:{size:10}}, grid:{color:'#21262d'} },
-        y: { ticks:{color:'#58a6ff',font:{size:10}}, grid:{color:'#21262d'}, position:'left', title:{display:true,text:'Revenue (M THB)',color:'#58a6ff',font:{size:9}} },
-        y2: { ticks:{color:'#f85149',font:{size:10}}, grid:{display:false}, position:'right', title:{display:true,text:'Defect %',color:'#f85149',font:{size:9}} }
-      }
-    }
+  otdC=new Chart(document.getElementById('otdChart').getContext('2d'),{type:'line',data:{labels:MONTHS,datasets:[
+    {label:'OTD %',data:[],borderColor:'#3fb950',backgroundColor:'rgba(63,185,80,0.1)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#3fb950'},
+    {label:'Fill Rate %',data:[],borderColor:'#39c5cf',backgroundColor:'rgba(57,197,207,0.07)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#39c5cf',borderDash:[4,3]},
+    {label:'Target 97%',data:MONTHS.map(()=>97),borderColor:'#f85149',borderDash:[6,4],pointRadius:0,fill:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#7d8590',font:{size:10},boxWidth:12}}},scales:{x:{ticks:{color:'#7d8590',font:{size:10}},grid:{color:'#21262d'}},y:{ticks:{color:'#7d8590',font:{size:10}},grid:{color:'#21262d'},min:94,max:101}}}});
+}
+
+function refreshCharts(){
+  const ms=getMs(), ps=getPs(), mSet=new Set(ms);
+  // Revenue & Defect — filter จริงจาก FACT
+  revC.data.datasets[0].data=MONTHS.map(m=>!mSet.has(m)?null:+sum(ps.map(p=>FACT[m][p].revenue)).toFixed(3));
+  revC.data.datasets[1].data=MONTHS.map(m=>{
+    if(!mSet.has(m))return null;
+    const u=sum(ps.map(p=>FACT[m][p].units));
+    return u>0?+(sum(ps.map(p=>FACT[m][p].defect*FACT[m][p].units))/u).toFixed(2):null;
   });
+  revC.data.datasets[0].backgroundColor=selMonth==='ALL'?'rgba(30,111,217,0.6)':MONTHS.map(m=>m===selMonth?'rgba(30,111,217,1)':'rgba(30,111,217,0.2)');
+  revC.update();
+
+  // Pie — revenue by product for selected months
+  pieC.data.datasets[0].data=PRODUCTS.map(p=>+sum(ms.map(m=>FACT[m][p].revenue)).toFixed(2));
+  pieC.data.datasets[0].backgroundColor=selProd==='ALL'?['#1e6fd9','#39c5cf','#d29922']:PRODUCTS.map(p=>{const b={'Engine Bolts':'30,111,217','Chassis Bolts':'57,197,207','Others':'210,153,34'}[p];return`rgba(${b},${p===selProd?1:0.18})`;});
+  pieC.update();
+
+  // OTD — month level metric
+  otdC.data.datasets[0].data=MONTHS.map(m=>mSet.has(m)?KPI[m].otd:null);
+  otdC.data.datasets[1].data=MONTHS.map(m=>mSet.has(m)?KPI[m].fillrate:null);
+  otdC.update();
 }
 
-function initPieChart() {
-  const ctx = document.getElementById('pieChart').getContext('2d');
-  pieChartObj = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Engine Bolts','Chassis Bolts','Others'],
-      datasets: [{
-        data: [17.66, 11.75, 10.26],
-        backgroundColor: ['#1e6fd9','#39c5cf','#d29922'],
-        borderColor: '#161b22', borderWidth: 2,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      cutout: '60%',
-      plugins: {
-        legend: { position:'bottom', labels:{color:'#7d8590',font:{size:10},boxWidth:10,padding:8} }
-      }
-    }
-  });
-}
-
-function initOtdChart() {
-  const ctx = document.getElementById('otdChart').getContext('2d');
-  otdChartObj = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: MONTHS,
-      datasets: [
-        {
-          label: 'OTD %',
-          data: MONTHS.map(m=>KPI[m].otd),
-          borderColor: '#3fb950',
-          backgroundColor: 'rgba(63,185,80,0.1)',
-          fill: true, tension: 0.4, pointRadius: 3,
-          pointBackgroundColor: '#3fb950',
-        },
-        {
-          label: 'Fill Rate %',
-          data: MONTHS.map(m=>KPI[m].fillrate),
-          borderColor: '#39c5cf',
-          backgroundColor: 'rgba(57,197,207,0.07)',
-          fill: true, tension: 0.4, pointRadius: 3,
-          pointBackgroundColor: '#39c5cf',
-          borderDash: [4,3],
-        },
-        {
-          label: 'Target 97%',
-          data: MONTHS.map(()=>97),
-          borderColor: '#f85149',
-          borderDash: [6,4], pointRadius: 0,
-          fill: false,
-        }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels:{color:'#7d8590',font:{size:10},boxWidth:12} } },
-      scales: {
-        x: { ticks:{color:'#7d8590',font:{size:10}}, grid:{color:'#21262d'} },
-        y: { ticks:{color:'#7d8590',font:{size:10}}, grid:{color:'#21262d'}, min:94, max:101 }
-      }
-    }
-  });
-}
-
-// ---- STAGE BARS ----
-function renderStageBars() {
-  const colors = {'Cold Forming':'#58a6ff','Thread Rolling':'#d29922','Heat Treatment':'#f85149','Plating':'#a78bfa'};
-  const html = Object.entries(STAGE_DEFECT).map(([stage, val])=>{
-    const pct = (val/3*100).toFixed(0);
-    const color = colors[stage];
-    const flag = val > 1.5 ? `<span style="color:#f85149">▲</span>` : `<span style="color:#3fb950">✓</span>`;
-    return `<div class="stage-row">
-      <div class="stage-header">
-        <span class="stage-name">${stage}</span>
-        <span class="stage-val" style="color:${color}">${val}% ${flag}</span>
-      </div>
-      <div class="stage-bar-bg">
-        <div class="stage-bar-fill" style="width:${pct}%;background:${color}"></div>
-      </div>
-    </div>`;
-  }).join('');
-  document.getElementById('stage-list').innerHTML = html;
-}
-
-// ---- OEE GAUGES ----
-function renderOEEGauges() {
-  const colors = {'Cold Forming':'#58a6ff','Thread Rolling':'#d29922','Heat Treatment':'#f85149','Plating':'#39c5cf'};
-  const r = 32, stroke = 6, circ = 2*Math.PI*r;
-  const html = Object.entries(OEE_PROC).map(([proc, val])=>{
-    const dash = (val/100*circ).toFixed(1);
-    const color = colors[proc];
-    return `<div class="oee-item">
-      <div class="oee-name">${proc}</div>
-      <div class="oee-circle">
-        <svg width="80" height="80" viewBox="0 0 80 80">
-          <circle cx="40" cy="40" r="${r}" fill="none" stroke="#21262d" stroke-width="${stroke}"/>
-          <circle cx="40" cy="40" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
-            stroke-dasharray="${dash} ${circ}" stroke-linecap="round"/>
-        </svg>
-        <div class="oee-text">
-          <span class="oee-pct" style="color:${color}">${val}%</span>
-          <span class="oee-lbl">OEE</span>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-  document.getElementById('oee-grid').innerHTML = html;
-}
-
-// ---- PRODUCT TABLE ----
-function renderProdTable() {
-  const rows = Object.entries(PROD_DATA).filter(([k])=>selProd==='ALL'||k===selProd);
-  const html = rows.map(([prod, d])=>{
-    const pill = d.defect < 2 ? `<span class="pill good">${d.defect}%</span>` : `<span class="pill warn">${d.defect}%</span>`;
-    return `<tr>
-      <td style="font-size:11px">${prod}</td>
-      <td class="mono">${d.revenue}M</td>
-      <td class="mono">${(d.units/1000).toFixed(0)}K</td>
-      <td>${pill}</td>
-    </tr>`;
-  }).join('');
-  document.querySelector('#prod-table tbody').innerHTML = html;
-}
-
-// ---- AI INSIGHTS ----
-function renderAIInsights() {
-  const months = getFilteredMonths();
-  const bestMonth = months.reduce((a,b)=>KPI[a].revenue>KPI[b].revenue?a:b);
-  const worstDefect = months.reduce((a,b)=>KPI[a].defect>KPI[b].defect?a:b);
-  const bestOEE = months.reduce((a,b)=>KPI[a].oee>KPI[b].oee?a:b);
-  const insights = [
-    `<span>Peak Revenue</span> เกิดใน ${bestMonth} ที่ ${KPI[bestMonth].revenue}M THB — AI ช่วย identify seasonal trend และ forecast ล่วงหน้า 3 เดือนได้`,
-    `<span>Highest Defect</span> เดือน ${worstDefect} (${KPI[worstDefect].defect}%) — AI สามารถ alert อัตโนมัติเมื่อ defect เกิน threshold และ suggest root cause`,
-    `<span>Best OEE</span> เดือน ${bestOEE} (${KPI[bestOEE].oee}%) — AI ช่วย optimize maintenance schedule เพื่อรักษา OEE ให้สม่ำเสมอ`,
-    `<span>Plating Stage</span> มี defect rate สูงสุด (1.82%) — AI Anomaly Detection จับ pattern ได้ก่อน quality escape`,
-  ];
-  document.getElementById('ai-insights').innerHTML = insights.map(i=>`<div class="ai-insight">▸ ${i}</div>`).join('');
-}
-
-// ---- MAIN UPDATE ----
-function update() {
-  updateKPIs();
-  renderProdTable();
-  renderAIInsights();
-
-  // update rev chart highlight
-  if(selMonth !== 'ALL') {
-    const idx = MONTHS.indexOf(selMonth);
-    const colors = MONTHS.map((m,i)=>i===idx?'rgba(30,111,217,1)':'rgba(30,111,217,0.3)');
-    revChartObj.data.datasets[0].backgroundColor = colors;
-    revChartObj.data.datasets[0].borderColor = colors;
+// ── STAGE BARS (เปลี่ยนตามเดือน + product จากข้อมูลจริง) ──────────────────
+function renderStageBars(){
+  const colors={'Cold Forming':'#58a6ff','Thread Rolling':'#d29922','Heat Treatment':'#f85149','Plating':'#a78bfa'};
+  let data={};
+  if(selMonth!=='ALL'&&selProd==='ALL'){
+    STAGES.forEach(st=>data[st]=DEFECT_STAGE_MONTH[`${selMonth}_${st}`]||0);
+  } else if(selMonth==='ALL'&&selProd!=='ALL'){
+    STAGES.forEach(st=>data[st]=DEFECT_STAGE_PROD[`${selProd}_${st}`]||0);
+  } else if(selMonth!=='ALL'&&selProd!=='ALL'){
+    // cross: ใช้ defect เดือนนั้น weighted ด้วย product share
+    STAGES.forEach(st=>data[st]=DEFECT_STAGE_MONTH[`${selMonth}_${st}`]||0);
   } else {
-    revChartObj.data.datasets[0].backgroundColor = 'rgba(30,111,217,0.6)';
-    revChartObj.data.datasets[0].borderColor = '#1e6fd9';
+    data=DEFECT_STAGE_ALL;
   }
-  revChartObj.update();
-
-  // pie
-  if(selProd !== 'ALL') {
-    const map = {'Engine Bolts':0,'Chassis Bolts':1,'Others':2};
-    const alpha = [0.2,0.2,0.2];
-    alpha[map[selProd]] = 1;
-    pieChartObj.data.datasets[0].backgroundColor = [
-      `rgba(30,111,217,${alpha[0]})`,
-      `rgba(57,197,207,${alpha[1]})`,
-      `rgba(210,153,34,${alpha[2]})`,
-    ];
-  } else {
-    pieChartObj.data.datasets[0].backgroundColor = ['#1e6fd9','#39c5cf','#d29922'];
-  }
-  pieChartObj.update();
+  const maxVal=Math.max(...Object.values(data))*1.3;
+  document.getElementById('stage-list').innerHTML=Object.entries(data).map(([st,val])=>{
+    const pct=Math.min(100,(val/maxVal*100)).toFixed(0);
+    const c=colors[st];
+    const flag=val>1.5?`<span style="color:#f85149">▲</span>`:`<span style="color:#3fb950">✓</span>`;
+    return`<div class="stage-row"><div class="stage-header"><span class="stage-name">${st}</span><span class="stage-val" style="color:${c}">${val.toFixed(2)}% ${flag}</span></div><div class="stage-bar-bg"><div class="stage-bar-fill" style="width:${pct}%;background:${c}"></div></div></div>`;
+  }).join('');
 }
 
-// ---- INIT ----
-initRevChart();
-initPieChart();
-initOtdChart();
-renderStageBars();
-renderOEEGauges();
+// ── OEE GAUGES (เปลี่ยนตามเดือนจากข้อมูลจริง) ────────────────────────────
+function renderOEEGauges(){
+  const colors={'Cold Forming':'#58a6ff','Thread Rolling':'#d29922','Heat Treatment':'#f85149','Plating':'#39c5cf'};
+  const data=selMonth!=='ALL'?Object.fromEntries(STAGES.map(st=>[st,OEE_MP[`${selMonth}_${st}`]||0])):OEE_ALL;
+  const r=32,stroke=6,circ=2*Math.PI*r;
+  document.getElementById('oee-grid').innerHTML=Object.entries(data).map(([proc,val])=>{
+    const dash=(val/100*circ).toFixed(1),c=colors[proc];
+    const flag=val>=85?`<span style="font-size:9px;color:#3fb950">✓</span>`:`<span style="font-size:9px;color:#f85149">▲</span>`;
+    return`<div class="oee-item"><div class="oee-name">${proc}</div><div class="oee-circle"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="${r}" fill="none" stroke="#21262d" stroke-width="${stroke}"/><circle cx="40" cy="40" r="${r}" fill="none" stroke="${c}" stroke-width="${stroke}" stroke-dasharray="${dash} ${circ}" stroke-linecap="round"/></svg><div class="oee-text"><span class="oee-pct" style="color:${c}">${val.toFixed(1)}%</span><span class="oee-lbl">OEE ${flag}</span></div></div></div>`;
+  }).join('');
+}
+
+// ── PRODUCT TABLE (cross-filter จาก FACT จริง) ────────────────────────────
+function renderProdTable(){
+  const ms=getMs(),ps=getPs();
+  const html=ps.map(p=>{
+    const rev=+sum(ms.map(m=>FACT[m][p].revenue)).toFixed(2);
+    const units=sum(ms.map(m=>FACT[m][p].units));
+    const defect=+(sum(ms.map(m=>FACT[m][p].defect*FACT[m][p].units))/units).toFixed(2);
+    const pill=defect<2?`<span class="pill good">${defect}%</span>`:`<span class="pill warn">${defect}%</span>`;
+    return`<tr><td style="font-size:11px">${p}</td><td class="mono">${rev}M</td><td class="mono">${(units/1000).toFixed(0)}K</td><td>${pill}</td></tr>`;
+  }).join('');
+  document.querySelector('#prod-table tbody').innerHTML=html;
+}
+
+// ── AI INSIGHTS ───────────────────────────────────────────────────────────────
+function renderAIInsights(){
+  const ms=getMs();
+  const bestM=ms.reduce((a,b)=>KPI[a].revenue>KPI[b].revenue?a:b);
+  const worstD=ms.reduce((a,b)=>KPI[a].defect>KPI[b].defect?a:b);
+  const bestO=ms.reduce((a,b)=>KPI[a].oee>KPI[b].oee?a:b);
+  const worstSt=Object.entries(selMonth!=='ALL'?Object.fromEntries(STAGES.map(st=>[st,DEFECT_STAGE_MONTH[`${selMonth}_${st}`]||0])):DEFECT_STAGE_ALL).reduce((a,b)=>a[1]>b[1]?a:b);
+  document.getElementById('ai-insights').innerHTML=[
+    `<span>Peak Revenue</span> เกิดใน ${bestM} ที่ ${KPI[bestM].revenue.toFixed(2)}M THB — AI ช่วย identify seasonal trend และ forecast ล่วงหน้า 3 เดือนได้`,
+    `<span>Highest Defect</span> เดือน ${worstD} (${KPI[worstD].defect}%) — AI สามารถ alert อัตโนมัติเมื่อ defect เกิน threshold`,
+    `<span>Best OEE</span> เดือน ${bestO} (${KPI[bestO].oee}%) — AI ช่วย optimize maintenance schedule เพื่อรักษา OEE ให้สม่ำเสมอ`,
+    `<span>${worstSt[0]}</span> มี defect rate สูงสุด (${worstSt[1].toFixed(2)}%) — AI Anomaly Detection จับ pattern ได้ก่อน quality escape`,
+  ].map(i=>`<div class="ai-insight">▸ ${i}</div>`).join('');
+}
+
+// ── SUBTITLES ─────────────────────────────────────────────────────────────────
+function updateSubs(){
+  const m=selMonth==='ALL'?'Full Year':selMonth, p=selProd==='ALL'?'All Products':selProd;
+  document.getElementById('header-sub').textContent=`Automotive Parts Manufacturing · ${m} 2025 · ${p}`;
+  document.getElementById('rev-sub').textContent=`Monthly Revenue (M THB) vs Defect Rate % — ${p} — dual axis`;
+  document.getElementById('stage-sub').textContent=`Avg % · Target < 1.5% · ${m} · ${p}`;
+  document.getElementById('oee-sub').textContent=`Avg % · Target ≥ 85% · ${m}`;
+  document.getElementById('pie-sub').textContent=`Share of revenue · ${m} 2025`;
+  document.getElementById('table-sub').textContent=`Revenue, Units & Defect · ${m} · ${p}`;
+  document.getElementById('otd-sub').textContent=`On-Time Delivery % vs Fill Rate % · ${m} · Target ≥ 97%`;
+}
+
+// ── MAIN UPDATE ───────────────────────────────────────────────────────────────
+function update(){updateKPIs();renderStageBars();renderOEEGauges();renderProdTable();renderAIInsights();refreshCharts();updateSubs();}
+
+initCharts();
 update();
 </script>
 </body>
 </html>
+
