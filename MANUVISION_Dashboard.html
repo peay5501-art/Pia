@@ -273,11 +273,8 @@ function refreshCharts(){
   const ms=getMs(), ps=getPs(), mSet=new Set(ms);
   // Revenue & Defect — filter จริงจาก FACT
   revC.data.datasets[0].data=MONTHS.map(m=>!mSet.has(m)?null:+sum(ps.map(p=>FACT[m][p].revenue)).toFixed(3));
-  revC.data.datasets[1].data=MONTHS.map(m=>{
-    if(!mSet.has(m))return null;
-    const u=sum(ps.map(p=>FACT[m][p].units));
-    return u>0?+(sum(ps.map(p=>FACT[m][p].defect*FACT[m][p].units))/u).toFixed(2):null;
-  });
+  // Defect line ใช้ KPI monthly (ค่าจริงจาก Excel) ไม่ใช่ product-level defect
+  revC.data.datasets[1].data=MONTHS.map(m=>!mSet.has(m)?null:KPI[m].defect);
   revC.data.datasets[0].backgroundColor=selMonth==='ALL'?'rgba(30,111,217,0.6)':MONTHS.map(m=>m===selMonth?'rgba(30,111,217,1)':'rgba(30,111,217,0.2)');
   revC.update();
 
